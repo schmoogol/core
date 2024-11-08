@@ -33,8 +33,8 @@ class EcovacsSelectEntityDescription(
 ENTITY_DESCRIPTIONS: tuple[EcovacsSelectEntityDescription, ...] = (
         DeebotSelectEntityDescription(
         capability_fn=lambda caps: caps.auto_empty,
-        current_option_fn=lambda e: get_name_key(e.mode),
-        options_fn=lambda cap: [get_name_key(mode) for mode in cap.types],
+        current_option_fn=lambda e: get_name_key(e.frequency),
+        options_fn=lambda cap: [get_name_key(frequency) for frequency in cap.types],
         key="auto_empty",
         translation_key="auto_empty",
         entity_registry_enabled_default=False,

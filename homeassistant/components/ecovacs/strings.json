@@ -158,11 +158,10 @@
     },
     "select": {
       "auto_empty": {
-        "name": "Auto empty",
+        "name": "Auto empty frequency",
         "state": {
-          "auto_empty_off": "Auto empty off",
-          "on_auto": "Auto",
-          "on_smart": "Smart"
+          "auto": "Auto",
+          "smart": "Smart"
         }
       },
       "water_amount": {
@@ -187,6 +186,9 @@
     "switch": {
       "advanced_mode": {
         "name": "Advanced mode"
+      },
+      "auto_empty": {
+        "name": "Auto empty"
       },
       "border_switch": {
         "name": "Border switch"
