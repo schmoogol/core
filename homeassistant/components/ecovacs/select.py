@@ -4,7 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Generic
 
-from deebot_client.capabilities import CapabilitySetTypes
+from deebot_client.capabilities import CapabilityCleanAutoEmpty, CapabilitySetTypes
 from deebot_client.device import Device
 from deebot_client.events import AutoEmptyEvent, WaterInfoEvent, WorkModeEvent
 
@@ -27,20 +27,10 @@ class EcovacsSelectEntityDescription(
     """Ecovacs select entity description."""
 
     current_option_fn: Callable[[EventT], str | None]
-    options_fn: Callable[[CapabilitySetTypes], list[str]]
+    options_fn: Callable[[CapabilitySetTypes] | CapabilityCleanAutoEmpty, list[str]]
 
 
 ENTITY_DESCRIPTIONS: tuple[EcovacsSelectEntityDescription, ...] = (
-        DeebotSelectEntityDescription(
-        capability_fn=lambda caps: caps.auto_empty,
-        current_option_fn=lambda e: get_name_key(e.frequency),
-        options_fn=lambda cap: [get_name_key(frequency) for frequency in cap.types],
-        key="auto_empty",
-        translation_key="auto_empty",
-        entity_registry_enabled_default=False,
-        icon="mdi:cog",
-        entity_category=EntityCategory.CONFIG,
-    ),
     EcovacsSelectEntityDescription[WaterInfoEvent](
         capability_fn=lambda caps: caps.water,
         current_option_fn=lambda e: get_name_key(e.amount),
@@ -60,6 +50,20 @@ ENTITY_DESCRIPTIONS: tuple[EcovacsSelectEntityDescription, ...] = (
     ),
 )
 
+ENTITY_ENABLE_DESCRIPTIONS: tuple[DeebotSelectEntityDescription, ...] = (
+    DeebotSelectEntityDescription(
+        capability_fn=lambda caps: caps.clean.auto_empty
+        if caps.clean.auto_empty
+        else None,
+        current_option_fn=lambda e: e.mode.display_name,
+        options_fn=lambda aut: [mode.display_name for mode in aut.types],
+        key="auto_empty",
+        translation_key="auto_empty",
+        entity_registry_enabled_default=False,
+        icon="mdi:delete-empty",
+        entity_category=EntityCategory.CONFIG,
+    ),
+)
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -108,3 +112,22 @@ class EcovacsSelectEntity(
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         await self._device.execute_command(self._capability.set(option))
+
+
+class DeebotSelectEnableEntity(
+    DeebotEntity[CapabilityCleanAutoEmpty, DeebotSelectEntityDescription],
+    SelectEntity,  # type: ignore
+):
+    """Deebot select entity."""
+
+    _attr_current_option: str | None = None
+
+    def __init__(
+        self,
+        device: Device,
+        capability: CapabilityCleanAutoEmpty,
+        entity_description: DeebotSelectEntityDescription | None = None,
+        **kwargs: Any,
+    ):
+        super().__init__(device, capability, entity_description, **kwargs)
+        self._attr_options = self.entity_description.options_fn(capability)

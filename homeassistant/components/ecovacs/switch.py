@@ -37,13 +37,6 @@ ENTITY_DESCRIPTIONS: tuple[EcovacsSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
     ),
     EcovacsSwitchEntityDescription(
-        capability_fn=lambda c: c.settings.auto_empty,
-        key="auto_empty",
-        translation_key="auto_empty",
-        entity_registry_enabled_default=False,
-        entity_category=EntityCategory.CONFIG,
-    ),
-    EcovacsSwitchEntityDescription(
         capability_fn=lambda c: c.clean.continuous,
         key="continuous_cleaning",
         translation_key="continuous_cleaning",
