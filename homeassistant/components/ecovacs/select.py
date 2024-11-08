@@ -6,7 +6,7 @@ from typing import Any, Generic
 
 from deebot_client.capabilities import CapabilitySetTypes
 from deebot_client.device import Device
-from deebot_client.events import WaterInfoEvent, WorkModeEvent
+from deebot_client.events import AutoEmptyEvent, WaterInfoEvent, WorkModeEvent
 
 from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from homeassistant.const import EntityCategory
@@ -31,6 +31,16 @@ class EcovacsSelectEntityDescription(
 
 
 ENTITY_DESCRIPTIONS: tuple[EcovacsSelectEntityDescription, ...] = (
+        DeebotSelectEntityDescription(
+        capability_fn=lambda caps: caps.auto_empty,
+        current_option_fn=lambda e: get_name_key(e.mode),
+        options_fn=lambda cap: [get_name_key(mode) for mode in cap.types],
+        key="auto_empty",
+        translation_key="auto_empty",
+        entity_registry_enabled_default=False,
+        icon="mdi:cog",
+        entity_category=EntityCategory.CONFIG,
+    ),
     EcovacsSelectEntityDescription[WaterInfoEvent](
         capability_fn=lambda caps: caps.water,
         current_option_fn=lambda e: get_name_key(e.amount),

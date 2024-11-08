@@ -157,6 +157,14 @@
       }
     },
     "select": {
+      "auto_empty": {
+        "name": "Auto empty",
+        "state": {
+          "auto_empty_off": "Auto empty off",
+          "on_auto": "Auto",
+          "on_smart": "Smart"
+        }
+      },
       "water_amount": {
         "name": "Water flow level",
         "state": {
